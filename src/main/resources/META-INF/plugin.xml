@@ -1,0 +1,71 @@
+<!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
+<idea-plugin>
+    <!-- Unique identifier of the plugin. It should be FQN. It cannot be changed between the plugin versions. -->
+    <id>io.github.amirisback.custom-notification-sound</id>
+
+    <!-- Public plugin name should be written in Title Case.
+     Guidelines: https://plugins.jetbrains.com/docs/marketplace/best-practices-for-listing.html#plugin-name -->
+    <name>Custom Notification Sound</name>
+
+    <!-- A displayed Vendor name or Organization ID displayed on the Plugins Page. -->
+    <vendor url="https://amirisback.github.io">Faisal Amir</vendor>
+
+    <!-- Description of the plugin displayed on the Plugin Page and IDE Plugin Manager.
+         Guidelines: https://plugins.jetbrains.com/docs/marketplace/best-practices-for-listing.html#plugin-description -->
+    <description><![CDATA[
+        <p><b>Custom Notification Sound</b> is a JetBrains IDE plugin that plays custom notification sounds when your build finishes.</p>
+
+        <h3>Features:</h3>
+        <ul>
+            <li>🎯 <b>APK/Bundle Build Success</b> — Special triumphant sound when assembleDebug, assembleRelease, bundleDebug, or bundleRelease completes successfully</li>
+            <li>✅ <b>Gradle Build Success</b> — Gentle chime when any other Gradle task completes successfully</li>
+            <li>❌ <b>Build Error</b> — Alert sound when any build fails</li>
+            <li>🎵 <b>Custom Sounds</b> — Use your own WAV files for each notification type</li>
+            <li>🔊 <b>Volume Control</b> — Adjustable volume slider</li>
+            <li>⚙ <b>Per-Type Toggle</b> — Enable or disable sounds individually for each event type</li>
+        </ul>
+
+        <h3>Supported Build Events:</h3>
+        <ul>
+            <li>Gradle task execution (assemble*, bundle*, and all other tasks)</li>
+            <li>IDE internal build (Make Project, Rebuild)</li>
+        </ul>
+        ]]></description>
+
+    <!-- Product and plugin compatibility requirements.
+         Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
+    <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.gradle</depends>
+
+    <resource-bundle>messages.MyMessageBundle</resource-bundle>
+
+    <!-- Extensions defined by the plugin.
+         Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- Tool Window -->
+        <toolWindow id="Notification Sound" factoryClass="io.github.amirisback.MyToolWindowFactory"
+                    icon="AllIcons.General.Notification" anchor="right"/>
+
+        <!-- Settings Service (Application-level) -->
+        <applicationService serviceImplementation="io.github.amirisback.settings.SoundSettingsState"/>
+
+        <!-- Settings Panel: Settings > Tools > Custom Notification Sound -->
+        <applicationConfigurable
+                parentId="tools"
+                instance="io.github.amirisback.settings.SoundSettingsConfigurable"
+                id="io.github.amirisback.settings.SoundSettingsConfigurable"
+                displayName="Custom Notification Sound"/>
+    </extensions>
+
+    <!-- Project-level listeners (declarative registration) -->
+    <projectListeners>
+        <!-- IDE internal build listener (Make/Rebuild) -->
+        <listener class="io.github.amirisback.listener.ProjectBuildListener"
+                  topic="com.intellij.task.ProjectTaskListener"/>
+
+        <!-- Gradle/External System build listener -->
+        <listener class="io.github.amirisback.listener.GradleBuildListener"
+                  topic="com.intellij.openapi.externalSystem.model.task.ExternalSystemTaskNotificationListener"/>
+    </projectListeners>
+
+</idea-plugin>
