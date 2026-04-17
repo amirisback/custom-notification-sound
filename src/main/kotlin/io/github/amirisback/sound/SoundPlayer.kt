@@ -67,7 +67,9 @@ object SoundPlayer {
 
         // Play on background thread
         Thread({
+            val oldClassLoader = Thread.currentThread().contextClassLoader
             try {
+                Thread.currentThread().contextClassLoader = SoundPlayer::class.java.classLoader
                 val audioStream = if (customPath.isNotBlank() && File(customPath).exists()) {
                     getAudioStreamFromFile(customPath)
                 } else {
@@ -77,6 +79,8 @@ object SoundPlayer {
                 audioStream?.let { playAudioStream(it, settings.volume) }
             } catch (e: Exception) {
                 LOG.warn("Failed to play sound: ${soundType.displayName}", e)
+            } finally {
+                Thread.currentThread().contextClassLoader = oldClassLoader
             }
         }, "CustomNotificationSound-Player").start()
     }
@@ -86,7 +90,9 @@ object SoundPlayer {
      */
     fun playPreview(filePath: String?, defaultResource: String, volume: Int) {
         Thread({
+            val oldClassLoader = Thread.currentThread().contextClassLoader
             try {
+                Thread.currentThread().contextClassLoader = SoundPlayer::class.java.classLoader
                 val audioStream = if (!filePath.isNullOrBlank() && File(filePath).exists()) {
                     getAudioStreamFromFile(filePath)
                 } else {
@@ -95,6 +101,8 @@ object SoundPlayer {
                 audioStream?.let { playAudioStream(it, volume) }
             } catch (e: Exception) {
                 LOG.warn("Failed to play preview sound", e)
+            } finally {
+                Thread.currentThread().contextClassLoader = oldClassLoader
             }
         }, "CustomNotificationSound-Preview").start()
     }
@@ -125,19 +133,23 @@ object SoundPlayer {
         audioStream.use { stream ->
             val format = stream.format
 
-            // Convert to PCM if necessary
-            val decodedFormat = AudioFormat(
-                AudioFormat.Encoding.PCM_SIGNED,
-                format.sampleRate,
-                16,
-                format.channels,
-                format.channels * 2,
-                format.sampleRate,
-                false
-            )
-
+            // Convert to PCM if necessary using explicit format (required by MP3 SPI)
             val decodedStream = if (format.encoding != AudioFormat.Encoding.PCM_SIGNED) {
-                AudioSystem.getAudioInputStream(decodedFormat, stream)
+                val decodedFormat = AudioFormat(
+                    AudioFormat.Encoding.PCM_SIGNED,
+                    format.sampleRate,
+                    16,
+                    format.channels,
+                    format.channels * 2,
+                    format.sampleRate,
+                    false
+                )
+                try {
+                    AudioSystem.getAudioInputStream(decodedFormat, stream)
+                } catch (e: Exception) {
+                    LOG.warn("Failed to decode audio stream format: $format", e)
+                    return
+                }
             } else {
                 stream
             }
@@ -170,9 +182,9 @@ object SoundPlayer {
 
             clip.start()
 
-            // Block thread until clip finishes playing
+            // Block thread until clip finishes playing (with 30-second timeout for safety)
             try {
-                latch.await()
+                latch.await(30, java.util.concurrent.TimeUnit.SECONDS)
             } catch (e: InterruptedException) {
                 // Ignore interruption
             } finally {
