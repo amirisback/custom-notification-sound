@@ -1,3 +1,78 @@
+# Custom Notification Sound
+
+Custom Notification Sound is an IntelliJ IDEA plugin that provides custom audio feedback for various build events or processes within the IDE.
+
+## Key Features
+
+- **Custom Sounds for Build Events:** Adds unique sounds for APK/Bundle build success, general Gradle build success, and build errors.
+- **Flexible Configuration:** Users can define their own sound files (WAV and MP3 formats) according to their needs.
+- **Volume Control:** Support for a dedicated volume adjuster for notification sounds.
+- **Event Toggles:** Notification sounds can be enabled or disabled for each type of event.
+- **Preview Panel:** Preview sounds directly from the configuration page (Settings panel) to test format and volume before saving settings.
+
+## Screenshots
+
+<div align="center">
+  <img src="docs/image/ss_1.png" alt="Settings Panel 1" width="800"/>
+  <br/>
+  <i>Custom Notification Sound Settings Panel View</i>
+  <br/><br/>
+  <img src="docs/image/ss_2.png" alt="Settings Panel 2" width="800"/>
+  <br/>
+  <i>Custom sound file configuration, complete with preview button and volume setup</i>
+</div>
+
+---
+
+## 🚀 How to Download
+
+To download and use this plugin:
+1. Go to the **Releases** page in this project's GitHub repository.
+2. Download the latest release file which is usually a `.zip` file (e.g., `custom-notification-sound-1.0.0.zip`).
+3. You can also search for this plugin directly in the **JetBrains Marketplace** (if the plugin has been officially published).
+
+---
+
+## 🛠️ Installation Guide (Install from Disk)
+
+If you downloaded the package from *Releases* (as a `.zip` file), follow these manual installation steps:
+1. Open IntelliJ IDEA (or other IntelliJ-based IDEs like Android Studio).
+2. Navigate to **File** > **Settings** (or **IntelliJ IDEA** > **Preferences** on macOS) > **Plugins**.
+3. Click the gear icon (⚙️) in the top right panel, then select **Install Plugin from Disk...**.
+4. Browse and select the `.zip` file you just downloaded.
+5. Click **Apply** or **OK**, then choose to *Restart IDE* if prompted.
+6. After restarting, you can find the plugin configuration under **Settings > Tools > Custom Notification Sound**.
+
+---
+
+## 💻 Build from Source Code
+
+If you want to modify or simply build this plugin yourself:
+
+### Prerequisites:
+- JDK 21 (according to the toolchain configured in `build.gradle.kts`)
+- Gradle (the project already includes the Gradle Wrapper)
+
+### Build Steps:
+1. Open a terminal or command prompt, then clone this repository to your computer:
+   ```bash
+   git clone https://github.com/amirisback/custom-notification-sound.git
+   ```
+2. Change your working directory to the main project folder:
+   ```bash
+   cd custom-notification-sound
+   ```
+3. Run the Gradle task `buildPlugin` to package the plugin into a local distribution file:
+   - **On Mac/Linux:**
+     ```bash
+     ./gradlew buildPlugin
+     ```
+   - **On Windows:**
+     ```cmd
+     gradlew.bat buildPlugin
+     ```
+4. After a successful build process, you can find the resulting `.zip` file inside the `build/distributions/` directory. You can then install it to your IDE by following the **Install from Disk** guide in the steps above.
+
 ## Plugin template structure
 
 A generated project contains the following content structure:
